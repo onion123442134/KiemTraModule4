@@ -39,7 +39,7 @@ public class OrderController {
             Model model) {
 
         if (from.after(to)) {
-            model.addAttribute("orders", orderService.findAll(0)); // show tất cả order nếu lỗi
+            model.addAttribute("orders", orderService.findAll(0));
             model.addAttribute("error", "Ngày kết thúc phải lớn hơn ngày bắt đầu");
             return "orders/list";
         }
@@ -82,8 +82,6 @@ public class OrderController {
                          @Valid @ModelAttribute("dto") OrderUpdateDTO dto,
                          BindingResult br,
                          Model model) {
-
-        // Validate ngày mua > ngày hiện tại
         if (dto.getNgayMua() != null && dto.getNgayMua().before(new Date())) {
             br.rejectValue("ngayMua", "error.dto", "Ngày mua phải lớn hơn ngày hiện tại");
         }

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa đơn hàng</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            padding: 30px;
+            color: #2d3436;
+        }
+
+        .box {
+            max-width: 450px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #00b894;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            transition: border 0.2s;
+        }
+
+        select:focus, input:focus {
+            border-color: #0984e3;
+            outline: none;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: #00b894;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #019875;
+        }
+
+        .error {
+            color: #d63031;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            color: #0984e3;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: #0652DD;
+        }
+
+        @media screen and (max-width: 500px) {
+            .box {
+                padding: 20px;
+                margin: 20px;
+            }
+
+            select, input[type="text"], input[type="number"], button {
+                padding: 8px;
+            }
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="box">
+    <h2>SỬA ĐƠN HÀNG</h2>
+
+    <form th:action="@{/orders/{id}/edit(id=${order.maDonHang})}"
+          method="post" th:object="${dto}">
+
+        <label>Loại sản phẩm</label>
+        <select th:field="*{categoryId}" required>
+            <option value="">-- Chọn loại --</option>
+            <option th:each="c : ${categories}"
+                    th:value="${c.maLoaiSp}"
+                    th:text="${c.tenLoaiSp}">
+            </option>
+        </select>
+        <div class="error" th:errors="*{categoryId}"></div>
+        <label>Sản phẩm</label>
+        <select th:field="*{productId}" required>
+            <option value="">-- Chọn sản phẩm --</option>
+            <option th:each="p : ${products}"
+                    th:value="${p.maSp}"
+                    th:text="${p.tenSp}">
+            </option>
+        </select>
+        <div class="error" th:errors="*{productId}"></div>
+
+        <label>Ngày mua</label>
+        <input type="text" th:field="*{ngayMua}" placeholder="dd/MM/yyyy">
+        <div class="error" th:errors="*{ngayMua}"></div>
+
+        <label>Số lượng</label>
+        <input type="number" th:field="*{soLuong}">
+        <div class="error" th:errors="*{soLuong}"></div>
+
+        <button type="submit">Cập nhật</button>
+    </form>
+
+    <br>
+    <a th:href="@{/orders}">← Quay lại danh sách</a>
+</div>
+
+</body>
+</html>

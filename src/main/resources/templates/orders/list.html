@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý đơn hàng</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            color: #2d3436;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0984e3;
+            margin-bottom: 25px;
+        }
+
+        .filter-box {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .filter-box form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-box label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        input[type="text"], input[type="number"], select {
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            min-width: 120px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background: #0984e3;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #0652DD;
+        }
+
+        .reset-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #d63031;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: background 0.2s;
+        }
+
+        .reset-btn:hover {
+            background: #b71c1c;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #0984e3;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        tr:hover {
+            background: #dfe6e9;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #0984e3;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #0984e3;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .pagination a:hover {
+            background: #0984e3;
+            color: white;
+        }
+        /* CSS nút Sửa */
+        table a.edit-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #00b894;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        table a.edit-btn:hover {
+            background: #019875;
+            transform: scale(1.05);
+        }
+        @media screen and (max-width: 768px) {
+            .filter-box form {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            input[type="text"], input[type="number"], select, button {
+                width: 100%;
+            }
+
+        }
+    </style>
+
+</head>
+<body>
+
+<h1>QUẢN LÝ ĐƠN HÀNG</h1>
+<div th:if="${error}" style="color:red; margin-bottom:10px;">
+    <p th:text="${error}"></p>
+</div>
+
+<div class="filter-box">
+    <!-- Nút Reset -->
+    <div style="margin-bottom:10px;">
+        <a th:href="@{/orders}"
+           style="padding:6px 12px; background:#d63031; color:white; text-decoration:none; border-radius:3px;">
+            Reset
+        </a>
+    </div>
+
+    <!-- Filter theo ngày -->
+    <form th:action="@{/orders/filter}" method="get">
+        <label>Từ ngày:</label>
+        <input type="text" name="from" placeholder="dd/MM/yyyy">
+
+        <label>Đến ngày:</label>
+        <input type="text" name="to" placeholder="dd/MM/yyyy">
+
+        <button type="submit">Xem</button>
+    </form>
+
+    <br>
+
+    <!-- Top -->
+    <form th:action="@{/orders/top}" method="get">
+        <label>Top:</label>
+        <input type="number" name="limit" min="1" required>
+        <button type="submit">Xem top</button>
+    </form>
+</div>
+
+
+<table>
+    <tr>
+        <th>STT</th>
+        <th>Mã ĐH</th>
+        <th>Tên SP</th>
+        <th>Giá</th>
+        <th>Loại</th>
+        <th>Ngày mua</th>
+        <th>Số lượng</th>
+        <th>Tổng tiền</th>
+        <th>Thao tác</th>
+    </tr>
+
+    <tr th:each="o, i : ${orders.content}">
+        <td th:text="${i.index + 1}"></td>
+        <td th:text="${o.maDonHang}"></td>
+        <td th:text="${o.product.tenSp}"></td>
+        <td th:text="${o.product.giaSp}"></td>
+        <td th:text="${o.product.category.tenLoaiSp}"></td>
+        <td th:text="${#dates.format(o.ngayMua,'dd/MM/yyyy')}"></td>
+        <td th:text="${o.soLuong}"></td>
+        <td th:text="${o.product.giaSp * o.soLuong}"></td>
+        <td>
+            <a th:href="@{/orders/{id}/edit(id=${o.maDonHang})}" class="edit-btn">Sửa</a>
+        </td>
+    </tr>
+</table>
+
+<div class="pagination">
+    <a th:if="${orders.hasPrevious()}"
+       th:href="@{/orders(page=${orders.number - 1})}">
+        ◀ Trước
+    </a>
+
+    <span>Trang <span th:text="${orders.number + 1}"></span></span>
+
+    <a th:if="${orders.hasNext()}"
+       th:href="@{/orders(page=${orders.number + 1})}">
+        Sau ▶
+    </a>
+</div>
+
+</body>
+</html>
